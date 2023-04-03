@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs')
 
 const userSchema = new mongoose.Schema({
 
@@ -21,17 +22,24 @@ const userSchema = new mongoose.Schema({
         unique : true
     },
     password : {
-        unique : true,
         type : String,
         required : true
     },
     repeatPassword : {
-        unique : true,
         type : String,
         required : true
     },
 })
 
+userSchema.pre("save" ,async function(next) {
+
+    if(this.isModified("password")){        //For if the password can be modified in future
+        this.password = await bcrypt.hash(this.password, 10);
+
+        this.repeatPassword = undefined;
+    }
+        next();
+})
 
 const Register = new mongoose.model("Register" , userSchema);
 

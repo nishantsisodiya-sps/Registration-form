@@ -6,7 +6,7 @@ const path = require('path')
 require('./db/connection')
 const Register = require('./model/userRegister')
 
-const port = process.env.port || 1212
+const port = process.env.port || 9999
 
 const static_path = path.join(__dirname, '../public')
 const templates_path = path.join(__dirname, '../templates/views')
@@ -50,6 +50,9 @@ app.post('/register', async (req, res) => {
                 repeatPassword : Cpassword
             })
 
+            // password Hashing
+
+
             const registered = await RegisterUser.save()
             res.status(201).render("index")
 
@@ -83,6 +86,23 @@ app.post('/login' , async(req , res)=>{
         res.status(400).send("Invalid Login Details")
     }
 })
+
+//Hashing Password
+
+// const bcrypt = require('bcryptjs');
+
+// const securePassword = async(password)=>{
+
+//     //Making password hash
+//     const passwordHash = await bcrypt.hash(password, 10);
+//     console.log(passwordHash);
+
+//     // checking password is matching or not 
+//     const passwordMatch = await bcrypt.compare('Nishant@123' , passwordHash)
+//     console.log(passwordMatch);
+// }
+
+// securePassword("Nishant@123")
 
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
