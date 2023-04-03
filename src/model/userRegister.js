@@ -1,6 +1,8 @@
+// Requirments 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs')
 
+// Defining schema 
 const userSchema = new mongoose.Schema({
 
     firstName : {
@@ -31,6 +33,8 @@ const userSchema = new mongoose.Schema({
     },
 })
 
+//Password Hashing
+
 userSchema.pre("save" ,async function(next) {
 
     if(this.isModified("password")){        //For if the password can be modified in future
@@ -40,6 +44,9 @@ userSchema.pre("save" ,async function(next) {
     }
         next();
 })
+
+
+// exporting modules 
 
 const Register = new mongoose.model("Register" , userSchema);
 
