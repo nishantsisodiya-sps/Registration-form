@@ -6,7 +6,7 @@ const path = require('path')
 require('./db/connection')
 const Register = require('./model/userRegister')
 
-const port = process.env.port || 3100
+const port = process.env.port || 1212
 
 const static_path = path.join(__dirname, '../public')
 const templates_path = path.join(__dirname, '../templates/views')
@@ -22,13 +22,16 @@ hbs.registerPartials(partials_path);
 
 
 app.get('/', (req, res) => {
-    res.render("index")
+    res.render("login")
 })
 
 app.get('/register', (req, res) => {
     res.render("register")
 })
 
+app.get('/index', (req, res) => {
+    res.render("index")
+})
 
 // to create a new user in database
 app.post('/register', async (req, res) => {
@@ -51,15 +54,34 @@ app.post('/register', async (req, res) => {
             res.status(201).render("index")
 
         } else {
-            res.send("not matching")
+            res.send("Password is not matching")
         }
     } catch (error) {
         res.status(400).send(error)
     }
 })
 
-app.get('/login', (req, res) => {
-    res.render("login")
+
+
+// login check
+
+app.post('/login' , async(req , res)=>{
+    try {
+        const email = req.body.email;
+        const password = req.body.password;
+        
+        const userEmail = await Register.findOne({email:email});
+        
+        if(userEmail.password === password){
+            res.status(201).render('index')
+        }
+        else{
+            res.send("invalid password")
+        }
+
+    } catch (error) {
+        res.status(400).send("Invalid Login Details")
+    }
 })
 
 app.listen(port, () => {
