@@ -1,5 +1,5 @@
 // Requirements 
-
+require('dotenv').config()
 const { urlencoded } = require('express');
 const express = require('express');
 const app = express();
@@ -8,7 +8,7 @@ const path = require('path')
 require('./db/connection')
 const Register = require('./model/userRegister')
 const port = process.env.port || 9999
-
+const bcrypt = require('bcryptjs')
 
 //Template paths
 const static_path = path.join(__dirname, '../public')
@@ -82,8 +82,11 @@ app.post('/login' , async(req , res)=>{
         const password = req.body.password;
         
         const userEmail = await Register.findOne({email:email});
+
+        const isMatch = await bcrypt.compare(password , userEmail.password)
+        const token = await userEmail.generateAuthToken();
         
-        if(userEmail.password === password){
+        if(isMatch){
             res.status(201).render('index')
         }
         else{
