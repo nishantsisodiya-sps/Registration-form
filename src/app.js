@@ -58,8 +58,10 @@ app.post('/register', async (req, res) => {
                 password :password,
                 repeatPassword : Cpassword
             })
+            const token = await RegisterUser.generateAuthToken();
 
             const registered = await RegisterUser.save()
+     
             res.status(201).render("index")
 
         } else {
@@ -94,6 +96,7 @@ app.post('/login' , async(req , res)=>{
 })
 
 
+
 // listen to the server 
 
 app.listen(port, () => {
@@ -112,7 +115,7 @@ app.listen(port, () => {
 
 
 
-//Hashing Password
+//Hashing Password ===================>
 
 // const bcrypt = require('bcryptjs');
 
@@ -128,3 +131,26 @@ app.listen(port, () => {
 // }
 
 // securePassword("Nishant@123")
+
+
+
+
+// implementation of JWT token  ================>
+
+// const jwt = require('jsonwebtoken');
+
+// // creating jwt token 
+// const createToken = async()=>{
+//    const token = await jwt.sign({_id : '6426d6db7eef9e3179554662'} , 'thisisthesecretekeyofnishantsisodiya' , {
+//     expiresIn : '2 minutes'             //to add expire token time
+//    })
+
+
+// //    varification of the token 
+
+//     userVerify = await jwt.verify(token , 'thisisthesecretekeyofnishantsisodiya');
+//     console.log(userVerify);
+// }
+
+
+// createToken()
