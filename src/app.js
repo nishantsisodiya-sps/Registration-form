@@ -6,9 +6,11 @@ const app = express();
 const hbs = require('hbs')
 const path = require('path')
 require('./db/connection')
+const auth = require('./middleware/auth')
 const Register = require('./model/userRegister')
 const port = process.env.port || 9999
 const bcrypt = require('bcryptjs')
+const cookieParser = require('cookie-parser')
 
 //Template paths
 const static_path = path.join(__dirname, '../public')
@@ -18,6 +20,7 @@ const partials_path = path.join(__dirname, '../templates/partials')
 
 // json needs express
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }));
 
 
@@ -41,6 +44,10 @@ app.get('/index', (req, res) => {
     res.render("index")
 })
 
+app.get('/secret',auth ,  (req, res) => {
+    console.log(`the cookies are ====> ${req.cookies.jwt}`);
+    res.render("secret")
+})
 
 // to create a new user in database
 app.post('/register', async (req, res) => {
@@ -60,6 +67,11 @@ app.post('/register', async (req, res) => {
             })
             const token = await RegisterUser.generateAuthToken();
 
+            res.cookie('jwt', token , {               //saving the token into cookiesss
+                expires : new Date(Date.now() + 600000),
+                httpOnly : true                         
+             })     
+
             const registered = await RegisterUser.save()
      
             res.status(201).render("index")
@@ -71,8 +83,6 @@ app.post('/register', async (req, res) => {
         res.status(400).send(error)
     }
 })
-
-
 
 // login check
 
@@ -86,6 +96,10 @@ app.post('/login' , async(req , res)=>{
         const isMatch = await bcrypt.compare(password , userEmail.password)
         const token = await userEmail.generateAuthToken();
         
+        res.cookie('jwt' , token ,{
+            expires : new Date(Date.now() + 600000),
+            httpOnly : true
+        })
         if(isMatch){
             res.status(201).render('index')
         }
@@ -98,20 +112,11 @@ app.post('/login' , async(req , res)=>{
     }
 })
 
-
-
 // listen to the server 
 
 app.listen(port, () => {
     console.log(`Listening to port ${port}`);
 })
-
-
-
-
-
-
-
 
 
 
