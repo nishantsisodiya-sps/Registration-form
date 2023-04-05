@@ -49,6 +49,21 @@ app.get('/secret',auth ,  (req, res) => {
     res.render("secret")
 })
 
+app.get('/logout',auth ,  async(req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((Currentelement)=>{
+        return Currentelement.token !== req.token
+    })
+    res.clearCookie("jwt");
+    await req.user.save();
+    console.log("Logout successfully");
+    res.render("login");
+    
+  } catch (error) {
+    res.status(401).send(error)
+  }
+})
+
 // to create a new user in database
 app.post('/register', async (req, res) => {
     try {
