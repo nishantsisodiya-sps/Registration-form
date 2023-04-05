@@ -51,9 +51,16 @@ app.get('/secret',auth ,  (req, res) => {
 
 app.get('/logout',auth ,  async(req, res) => {
   try {
-    req.user.tokens = req.user.tokens.filter((Currentelement)=>{
-        return Currentelement.token !== req.token
-    })
+
+    //Logout from single device
+    // req.user.tokens = req.user.tokens.filter((Currentelement)=>{
+    //     return Currentelement.token !== req.token
+    // })
+
+
+    //Logout from all accounts
+    req.user.tokens = [];
+
     res.clearCookie("jwt");
     await req.user.save();
     console.log("Logout successfully");
